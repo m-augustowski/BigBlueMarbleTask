@@ -29,10 +29,15 @@ struct MovieCardView: View {
                             .clipped()
 
                     case .failure:
-                        Image(systemName: "photo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 400, height: 360)
+                        ZStack {
+                            Color.gray.opacity(0.2)
+                            Image(systemName: "photo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 80, height: 80)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(width: 400, height: 360)
 
                     @unknown default:
                         EmptyView()
