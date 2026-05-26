@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum MovieSectionState {
+enum MovieSectionState: Equatable {
     case loading
     case empty
     case ready([Movie])
