@@ -24,8 +24,7 @@ final class HomeViewModel: ObservableObject {
         let _ = try? await clientEndpoint.client.fetchGenres()
         
         await loadMovies(category: .popular)
-//        await loadMovies(category: .nowPlaying)
-        nowPlayingMoviesState = .error(message(for: NSError(domain: "unknown", code: 0)))
+        await loadMovies(category: .nowPlaying)
         await loadMovies(category: .upcoming)
     }
     
