@@ -55,6 +55,9 @@ struct HomeView: View {
                 await model.loadUpcomingMovies()
             }
         }
+        .task {
+            await model.prefetchGenres()
+        }
     }
     
 }

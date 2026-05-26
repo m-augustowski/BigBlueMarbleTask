@@ -20,6 +20,10 @@ final class HomeViewModel: ObservableObject {
         self.clientEndpoint = clientEndpoint
     }
     
+    func prefetchGenres() async {
+        let _ = try? await clientEndpoint.client.fetchGenres()
+    }
+    
     func loadPopularMovies() async {
         await loadMovies(category: .popular, state: \.popularMoviesState)
     }

@@ -1,5 +1,5 @@
 //
-//  TMDBResponse.swift
+//  TMDBMovieGenre.swift
 //  BigBlueMarbleTask
 //
 //  Created by Nicolas Augustowski on 5/26/26.
@@ -7,6 +7,7 @@
 
 import Foundation
 
-struct TMDBResponse: Codable {
-    let results: [TMDBMovie]
+struct TMDBMovieGenre: Codable {
+    let id: Int
+    let name: String
 }

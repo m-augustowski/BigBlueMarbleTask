@@ -8,6 +8,7 @@
 import Foundation
 
 protocol MovieClientProtocol {
+    func fetchGenres() async throws
     func fetchMovies(by category: MovieCategory) async throws -> [Movie]
 }
 

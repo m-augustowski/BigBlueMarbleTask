@@ -8,20 +8,43 @@
 import Foundation
 
 final class TMDBClient: MovieClientProtocol {
-    private let baseUrl: URL = URL(string: "https://api.themoviedb.org/3/movie")!
+    private let baseUrl: URL = URL(string: "https://api.themoviedb.org/3")!
     private let token: String
+    
+    private var genreByIdCached: [Int: String] = [:]
     
     init() {
         self.token = SecretsProvider.tmdbApiToken
     }
     
     func fetchMovies(by category: MovieCategory) async throws -> [Movie] {
-        let url = baseUrl.appendingPathComponent(category.urlPathComponent())
+        let url = baseUrl
+            .appendingPathComponent("movie")
+            .appendingPathComponent(category.urlPathComponent())
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
+        let decoded: TMDBMoviesResponse = try await executeAndDecode(request)
+        let movies = decoded.results.map { Movie(tmdbMovie: $0, genreById: genreByIdCached)  }
+        return movies
+    }
+    
+    func fetchGenres() async throws {
+        let url = baseUrl.appendingPathComponent("genre/movie/list")
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let decoded: TMDBMovieGenresResponse = try await executeAndDecode(request)
+        self.genreByIdCached = Dictionary(
+            uniqueKeysWithValues: decoded.genres.map { ($0.id, $0.name) }
+        )
+    }
+    
+    private func executeAndDecode<T: Codable>(_ request: URLRequest) async throws -> T {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
@@ -34,11 +57,8 @@ final class TMDBClient: MovieClientProtocol {
             }
             
             do {
-                let decoded = try JSONDecoder().decode(TMDBResponse.self, from: data)
-                
-                let movies = decoded.results.map { Movie(tbdbMovie: $0)  }
-                
-                return movies
+                let decoded = try JSONDecoder().decode(T.self, from: data)
+                return decoded
             } catch {
                 throw NetworkError.decodingFailed(error)
             }
@@ -66,11 +86,12 @@ private extension MovieCategory {
 }
 
 private extension Movie {
-    init(tbdbMovie: TMDBMovie) {
+    init(tmdbMovie: TMDBMovie, genreById: [Int: String]) {
         self.init(
-            title: tbdbMovie.title,
-            overview: tbdbMovie.overview,
-            iconURL: tbdbMovie.posterPath.flatMap { URL(string: "https://image.tmdb.org/t/p/w500/\($0)") }
+            title: tmdbMovie.title,
+            overview: tmdbMovie.overview,
+            iconURL: tmdbMovie.posterPath.flatMap { URL(string: "https://image.tmdb.org/t/p/w500/\($0)") },
+            genres: tmdbMovie.genreIds.compactMap { genreById[$0] }
         )
     }
 }

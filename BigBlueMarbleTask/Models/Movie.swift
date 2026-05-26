@@ -12,4 +12,5 @@ struct Movie: Identifiable, Hashable {
     let title: String
     let overview: String
     let iconURL: URL?
+    let genres: [String]
 }
