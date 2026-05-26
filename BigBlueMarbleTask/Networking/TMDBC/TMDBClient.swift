@@ -13,6 +13,12 @@ final class TMDBClient: MovieClientProtocol {
     
     private var genreByIdCached: [Int: String] = [:]
     
+    private let session: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 10.0
+        return URLSession(configuration: configuration)
+    }()
+    
     init() {
         self.token = SecretsProvider.tmdbApiToken
     }
@@ -32,7 +38,10 @@ final class TMDBClient: MovieClientProtocol {
     }
     
     func fetchGenres() async throws {
-        let url = baseUrl.appendingPathComponent("genre/movie/list")
+        let url = baseUrl
+            .appendingPathComponent("genre")
+            .appendingPathComponent("movie")
+            .appendingPathComponent("list")
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -46,25 +55,38 @@ final class TMDBClient: MovieClientProtocol {
     
     private func executeAndDecode<T: Codable>(_ request: URLRequest) async throws -> T {
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
+            let (data, response) = try await session.data(for: request)
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NetworkError.invalidResponse
             }
-            
+
             guard 200...299 ~= httpResponse.statusCode else {
                 throw NetworkError.badStatusCode(httpResponse.statusCode)
             }
-            
+
             do {
                 let decoded = try JSONDecoder().decode(T.self, from: data)
                 return decoded
             } catch {
                 throw NetworkError.decodingFailed(error)
             }
-            
+
         } catch let error as NetworkError {
             throw error
+        } catch let error as URLError {
+            switch error.code {
+            case .timedOut:
+                throw NetworkError.requestTimedOut
+            case .notConnectedToInternet:
+                throw NetworkError.noInternetConnection
+            case .cannotFindHost:
+                throw NetworkError.hostNotFound
+            case .cannotConnectToHost:
+                throw NetworkError.cannotConnectToHost
+            default:
+                throw NetworkError.requestFailed(error)
+            }
         } catch {
             throw NetworkError.requestFailed(error)
         }

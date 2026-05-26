@@ -18,8 +18,8 @@ enum MovieSectionState {
 struct MovieSectionView: View {
     let category: MovieCategory
     @Binding var state: MovieSectionState
-    
     var focusedMovieID: FocusState<Movie.ID?>.Binding
+    let onRetry: () async -> Void
     
     var body: some View {
         HStack {
@@ -65,15 +65,24 @@ struct MovieSectionView: View {
             .frame(alignment: .leading)
             
         case .error(let message):
-            Button { } label: {
+            VStack(spacing: 20) {
+                
                 Text(message)
-                    .font(.title2)
-                    .frame(height: 300)
-                    .frame(maxWidth: .infinity)
+                    .font(.title3)
+                
+                Button {
+                    Task {
+                        await onRetry()
+                    }
+                } label: {
+                    Label("Retry", systemImage: "arrow.clockwise")
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.card)
             }
-            .buttonStyle(.card)
-            
+            .frame(height: 300)
+            .frame(maxWidth: .infinity)
         }
-        
     }
 }

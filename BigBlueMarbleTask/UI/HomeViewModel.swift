@@ -23,15 +23,21 @@ final class HomeViewModel: ObservableObject {
     func load() async {
         let _ = try? await clientEndpoint.client.fetchGenres()
         
-        await loadMovies(category: .popular, state: \.popularMoviesState)
-        await loadMovies(category: .nowPlaying, state: \.nowPlayingMoviesState)
-        await loadMovies(category: .upcoming, state: \.upcomingMoviesState)
+        await loadMovies(category: .popular)
+//        await loadMovies(category: .nowPlaying)
+        nowPlayingMoviesState = .error(message(for: NSError(domain: "unknown", code: 0)))
+        await loadMovies(category: .upcoming)
     }
     
-    private func loadMovies(
-        category: MovieCategory,
-        state: ReferenceWritableKeyPath<HomeViewModel, MovieSectionState>
-    ) async {
+    func retryLoad(for category: MovieCategory) {
+        Task {
+            await loadMovies(category: category)
+        }
+    }
+    
+    private func loadMovies(category: MovieCategory) async {
+        let state = category.stateKeyPath
+        
         self[keyPath: state] = .loading
         
         do {
@@ -55,10 +61,35 @@ final class HomeViewModel: ObservableObject {
             return "Server error: \(code)"
         case NetworkError.invalidURL:
             return "Invalid request URL."
+        case NetworkError.invalidResponse:
+            return "Invalid server response."
         case NetworkError.decodingFailed:
             return "Could not read server response."
+        case NetworkError.requestTimedOut:
+            return "The request timed out. Please try again."
+        case NetworkError.noInternetConnection:
+            return "No internet connection."
+        case NetworkError.hostNotFound:
+            return "Server host could not be found."
+        case NetworkError.cannotConnectToHost:
+            return "Could not connect to the server."
+        case NetworkError.requestFailed:
+            return "Request failed. Please try again."
         default:
             return "Something went wrong. Please try again."
+        }
+    }
+}
+
+fileprivate extension MovieCategory {
+    var stateKeyPath: ReferenceWritableKeyPath<HomeViewModel, MovieSectionState> {
+        switch self {
+        case .popular:
+            return \.popularMoviesState
+        case .nowPlaying:
+            return \.nowPlayingMoviesState
+        case .upcoming:
+            return \.upcomingMoviesState
         }
     }
 }

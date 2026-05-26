@@ -32,19 +32,25 @@ struct HomeView: View {
                 category: .popular,
                 state: $model.popularMoviesState,
                 focusedMovieID: $focusedMovieID
-            )
+            ) {
+                model.retryLoad(for: .popular)
+            }
             
             MovieSectionView(
                 category: .nowPlaying,
                 state: $model.nowPlayingMoviesState,
                 focusedMovieID: $focusedMovieID
-            )
+            ) {
+                model.retryLoad(for: .nowPlaying)
+            }
             
             MovieSectionView(
                 category: .upcoming,
                 state: $model.upcomingMoviesState,
                 focusedMovieID: $focusedMovieID
-            )
+            ) {
+                model.retryLoad(for: .upcoming)
+            }
         }
         .task {
             await model.load()
