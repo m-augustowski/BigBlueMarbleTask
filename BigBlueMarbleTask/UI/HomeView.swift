@@ -33,30 +33,21 @@ struct HomeView: View {
                 state: $model.popularMoviesState,
                 focusedMovieID: $focusedMovieID
             )
-            .task {
-                await model.loadPopularMovies()
-            }
             
             MovieSectionView(
                 category: .nowPlaying,
                 state: $model.nowPlayingMoviesState,
                 focusedMovieID: $focusedMovieID
             )
-            .task {
-                await model.loadNowPlayingMovies()
-            }
             
             MovieSectionView(
                 category: .upcoming,
                 state: $model.upcomingMoviesState,
                 focusedMovieID: $focusedMovieID
             )
-            .task {
-                await model.loadUpcomingMovies()
-            }
         }
         .task {
-            await model.prefetchGenres()
+            await model.load()
         }
     }
     
