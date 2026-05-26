@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MovieCardView: View {
     let movie: Movie
+    let mode: MovieViewMode
     let isFocused: Bool
     
     var body: some View {
@@ -25,7 +26,7 @@ struct MovieCardView: View {
                         image
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 400, height: 360)
+                            .frame(width: mode.size().width, height: mode.size().height - 140)
                             .clipped()
 
                     case .failure:

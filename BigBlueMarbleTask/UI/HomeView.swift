@@ -30,6 +30,7 @@ struct HomeView: View {
             
             MovieSectionView(
                 category: .popular,
+                mode: .medium,
                 state: $model.popularMoviesState,
                 focusedMovieID: $focusedMovieID
             ) {
@@ -38,6 +39,7 @@ struct HomeView: View {
             
             MovieSectionView(
                 category: .nowPlaying,
+                mode: .small,
                 state: $model.nowPlayingMoviesState,
                 focusedMovieID: $focusedMovieID
             ) {
@@ -46,6 +48,7 @@ struct HomeView: View {
             
             MovieSectionView(
                 category: .upcoming,
+                mode: .large,
                 state: $model.upcomingMoviesState,
                 focusedMovieID: $focusedMovieID
             ) {

@@ -15,8 +15,26 @@ enum MovieSectionState {
     case error(String)
 }
 
+enum MovieViewMode {
+    case large
+    case medium
+    case small
+    
+    func size() -> CGSize {
+        switch self {
+        case .large:
+            return CGSize(width: 600, height: 500)
+        case .medium:
+            return CGSize(width: 400, height: 500)
+        case .small:
+            return CGSize(width: 300, height: 400)
+        }
+    }
+}
+
 struct MovieSectionView: View {
     let category: MovieCategory
+    let mode: MovieViewMode
     @Binding var state: MovieSectionState
     var focusedMovieID: FocusState<Movie.ID?>.Binding
     let onRetry: () async -> Void
@@ -54,8 +72,8 @@ struct MovieSectionView: View {
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0.0) {
                     ForEach(movies, id: \.self) { movie in
-                        MovieCardView(movie: movie, isFocused: focusedMovieID.wrappedValue == movie.id)
-                            .frame(width: 400, height: 500)
+                        MovieCardView(movie: movie, mode: mode, isFocused: focusedMovieID.wrappedValue == movie.id)
+                            .frame(width: mode.size().width, height: mode.size().height)
                             .focusable(true)
                             .focused(focusedMovieID, equals: movie.id)
                             .padding()
