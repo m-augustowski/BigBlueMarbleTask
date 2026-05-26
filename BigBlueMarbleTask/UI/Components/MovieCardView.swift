@@ -13,47 +13,80 @@ struct MovieCardView: View {
     let isFocused: Bool
     
     var body: some View {
-        VStack {
-            AsyncImage(url: movie.iconURL) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .frame(width: 300, height: 260)
+        VStack(spacing: 0.0) {
+            ZStack(alignment: .bottomTrailing) {
+                AsyncImage(url: movie.iconURL) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: 400, height: 360)
 
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 300, height: 260)
-                        .clipped()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 400, height: 360)
+                            .clipped()
 
-                case .failure:
-                    Image(systemName: "photo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 80, height: 80)
-                        .frame(width: 300, height: 260)
+                    case .failure:
+                        Image(systemName: "photo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 400, height: 360)
 
-                @unknown default:
-                    EmptyView()
+                    @unknown default:
+                        EmptyView()
+                    }
+                }
+
+                if isFocused {
+                    Button {
+
+                    } label: {
+                        Image(systemName: "play.fill")
+                            .font(.title3)
+                            .foregroundStyle(.black)
+                            .padding(14)
+                            .background(.white)
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(16)
+                    .transition(
+                         .asymmetric(
+                             insertion: .scale(scale: 0.7)
+                                 .combined(with: .opacity),
+                             removal: .opacity
+                         )
+                     )
                 }
             }
             
-            VStack {
-                Text(movie.title)
-                    .font(.headline)
-                    .lineLimit(1)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(movie.title)
+                        .font(.caption)
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                    
+                    Spacer()
+                }
                 
-                Text(movie.overview)
-                    .font(.subheadline)
-                    .lineLimit(1)
+                HStack {
+                    Text(movie.genres.prefix(2).joined(separator: " • "))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                    
+                    Spacer()
+                }
             }
-            .frame(alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
         }
-        .background(Color(.systemGray))
+        .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 20))
-        .scaleEffect(isFocused ? 1.08 : 1.0)
+        .scaleEffect(isFocused ? 1.10 : 1.0)
         .animation(.easeInOut(duration: 0.2), value: isFocused)
     }
 }

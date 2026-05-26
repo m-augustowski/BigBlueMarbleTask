@@ -55,7 +55,7 @@ struct MovieSectionView: View {
                 LazyHStack(spacing: 0.0) {
                     ForEach(movies, id: \.self) { movie in
                         MovieCardView(movie: movie, isFocused: focusedMovieID.wrappedValue == movie.id)
-                            .frame(width: 300, height: 400)
+                            .frame(width: 400, height: 500)
                             .focusable(true)
                             .focused(focusedMovieID, equals: movie.id)
                             .padding()
