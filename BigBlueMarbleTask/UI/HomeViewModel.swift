@@ -40,12 +40,12 @@ final class HomeViewModel: ObservableObject {
         self[keyPath: state] = .loading
         
         do {
-            let movies = try await clientEndpoint.client.fetchMovies(by: category)
+            let moviePage = try await clientEndpoint.client.fetchMovies(by: category, page: 1)
             
-            if movies.isEmpty {
+            if moviePage.movies.isEmpty {
                 self[keyPath: state] = .empty
             } else {
-                self[keyPath: state] = .ready(movies)
+                self[keyPath: state] = .ready(moviePage.movies)
             }
         } catch {
             self[keyPath: state] = .error(message(for: error))

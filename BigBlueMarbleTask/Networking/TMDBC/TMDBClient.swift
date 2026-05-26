@@ -23,18 +23,24 @@ final class TMDBClient: MovieClientProtocol {
         self.token = SecretsProvider.tmdbApiToken
     }
     
-    func fetchMovies(by category: MovieCategory) async throws -> [Movie] {
+    func fetchMovies(by category: MovieCategory, page: Int) async throws -> MoviePage {
         let url = baseUrl
             .appendingPathComponent("movie")
             .appendingPathComponent(category.urlPathComponent())
+            .appending(queryItems: [URLQueryItem(name: "page", value: "\(page)")])
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         let decoded: TMDBMoviesResponse = try await executeAndDecode(request)
-        let movies = decoded.results.map { Movie(tmdbMovie: $0, genreById: genreByIdCached)  }
-        return movies
+        let movies = decoded.results.map { Movie(tmdbMovie: $0, genreById: genreByIdCached) }
+        return MoviePage(
+            movies: movies,
+            page: decoded.page,
+            totalPages: decoded.totalPages,
+            totalResults: decoded.totalResults
+        )
     }
     
     func fetchGenres() async throws {
@@ -110,6 +116,7 @@ private extension MovieCategory {
 private extension Movie {
     init(tmdbMovie: TMDBMovie, genreById: [Int: String]) {
         self.init(
+            providerID: tmdbMovie.id,
             title: tmdbMovie.title,
             overview: tmdbMovie.overview,
             iconURL: tmdbMovie.posterPath.flatMap { URL(string: "https://image.tmdb.org/t/p/w500/\($0)") },

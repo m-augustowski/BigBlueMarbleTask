@@ -71,13 +71,21 @@ struct MovieSectionView: View {
         case .ready(let movies):
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0.0) {
-                    ForEach(movies, id: \.self) { movie in
+                    ForEach(movies) { movie in
                         MovieCardView(movie: movie, mode: mode, isFocused: focusedMovieID.wrappedValue == movie.id)
                             .frame(width: mode.size().width, height: mode.size().height)
                             .focusable(true)
                             .focused(focusedMovieID, equals: movie.id)
                             .padding()
                     }
+                    
+                    NavigationLink(value: category) {
+                        Label("Show All", systemImage: "square.grid.2x2")
+                            .font(.headline)
+                            .frame(width: 220, height: mode.size().height)
+                    }
+                    .buttonStyle(.card)
+                    .padding()
                 }
             }
             .frame(alignment: .leading)

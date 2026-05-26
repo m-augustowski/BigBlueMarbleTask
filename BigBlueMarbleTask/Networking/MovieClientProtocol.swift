@@ -9,6 +9,6 @@ import Foundation
 
 protocol MovieClientProtocol {
     func fetchGenres() async throws
-    func fetchMovies(by category: MovieCategory) async throws -> [Movie]
+    func fetchMovies(by category: MovieCategory, page: Int) async throws -> MoviePage
 }
 

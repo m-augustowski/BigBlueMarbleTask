@@ -15,62 +15,70 @@ struct HomeView: View {
     @FocusState private var focusedMovieID: Movie.ID?
     @State private var retriedCategory: MovieCategory?
     
+    private let clientEndpoint: MovieClientEndpoint
+    
     init(clientEndpoint: MovieClientEndpoint) {
+        self.clientEndpoint = clientEndpoint
         _model = StateObject(
             wrappedValue: HomeViewModel(clientEndpoint: clientEndpoint)
         )
     }
     
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                Text("Home View")
-                    .font(.title)
-                    .frame(alignment: .leading)
-                
-                Divider()
-                
-                MovieSectionView(
-                    category: .popular,
-                    mode: .medium,
-                    state: $model.popularMoviesState,
-                    focusedMovieID: $focusedMovieID
-                ) {
-                    retry(.popular)
+        NavigationStack {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Text("Home View")
+                        .font(.title)
+                        .frame(alignment: .leading)
+                    
+                    Divider()
+                    
+                    MovieSectionView(
+                        category: .popular,
+                        mode: .medium,
+                        state: $model.popularMoviesState,
+                        focusedMovieID: $focusedMovieID
+                    ) {
+                        retry(.popular)
+                    }
+                    .id(MovieCategory.popular)
+                    
+                    MovieSectionView(
+                        category: .nowPlaying,
+                        mode: .small,
+                        state: $model.nowPlayingMoviesState,
+                        focusedMovieID: $focusedMovieID
+                    ) {
+                        retry(.nowPlaying)
+                    }
+                    .id(MovieCategory.nowPlaying)
+                    
+                    MovieSectionView(
+                        category: .upcoming,
+                        mode: .large,
+                        state: $model.upcomingMoviesState,
+                        focusedMovieID: $focusedMovieID
+                    ) {
+                        retry(.upcoming)
+                    }
+                    .id(MovieCategory.upcoming)
                 }
-                .id(MovieCategory.popular)
-                
-                MovieSectionView(
-                    category: .nowPlaying,
-                    mode: .small,
-                    state: $model.nowPlayingMoviesState,
-                    focusedMovieID: $focusedMovieID
-                ) {
-                    retry(.nowPlaying)
+                .task {
+                    await model.load()
                 }
-                .id(MovieCategory.nowPlaying)
-                
-                MovieSectionView(
-                    category: .upcoming,
-                    mode: .large,
-                    state: $model.upcomingMoviesState,
-                    focusedMovieID: $focusedMovieID
-                ) {
-                    retry(.upcoming)
+                .onChange(of: model.popularMoviesState) { _, state in
+                    restoreRetriedSection(.popular, state: state, proxy: proxy)
                 }
-                .id(MovieCategory.upcoming)
+                .onChange(of: model.nowPlayingMoviesState) { _, state in
+                    restoreRetriedSection(.nowPlaying, state: state, proxy: proxy)
+                }
+                .onChange(of: model.upcomingMoviesState) { _, state in
+                    restoreRetriedSection(.upcoming, state: state, proxy: proxy)
+                }
             }
-            .task {
-                await model.load()
-            }
-            .onChange(of: model.popularMoviesState) { _, state in
-                restoreRetriedSection(.popular, state: state, proxy: proxy)
-            }
-            .onChange(of: model.nowPlayingMoviesState) { _, state in
-                restoreRetriedSection(.nowPlaying, state: state, proxy: proxy)
-            }
-            .onChange(of: model.upcomingMoviesState) { _, state in
-                restoreRetriedSection(.upcoming, state: state, proxy: proxy)
+            .navigationDestination(for: MovieCategory.self) { category in
+                AllMoviesView(category: category, clientEndpoint: clientEndpoint)
             }
         }
     }
