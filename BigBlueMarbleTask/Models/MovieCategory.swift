@@ -9,6 +9,6 @@ import Foundation
 
 enum MovieCategory: String {
     case popular = "Popular"
-    case mostViewed = "Most Viewed"
+    case nowPlaying = "Now playing"
     case upcoming = "Upcoming"
 }

@@ -8,8 +8,6 @@
 import Foundation
 
 protocol MovieClientProtocol {
-    func getPopular() async throws -> [Movie]
-    func getMostViewed() async throws -> [Movie]
-    func getUpcoming() async throws -> [Movie]
+    func fetchMovies(by category: MovieCategory) async throws -> [Movie]
 }
 

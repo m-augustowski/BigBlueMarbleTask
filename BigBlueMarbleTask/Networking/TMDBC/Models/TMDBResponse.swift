@@ -1,0 +1,12 @@
+//
+//  TMDBResponse.swift
+//  BigBlueMarbleTask
+//
+//  Created by Nicolas Augustowski on 5/26/26.
+//
+
+import Foundation
+
+struct TMDBResponse: Codable {
+    let results: [TMDBMovie]
+}

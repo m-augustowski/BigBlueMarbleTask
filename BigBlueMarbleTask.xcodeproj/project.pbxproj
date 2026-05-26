@@ -10,9 +10,22 @@
 		892ADEE42FC4C341001B1F8E /* BigBlueMarbleTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigBlueMarbleTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		89AB50322FC588A50091A7CB /* Exceptions for "BigBlueMarbleTask" folder in "BigBlueMarbleTask" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 892ADEE32FC4C341001B1F8E /* BigBlueMarbleTask */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		892ADEE62FC4C341001B1F8E /* BigBlueMarbleTask */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				89AB50322FC588A50091A7CB /* Exceptions for "BigBlueMarbleTask" folder in "BigBlueMarbleTask" target */,
+			);
 			path = BigBlueMarbleTask;
 			sourceTree = "<group>";
 		};
@@ -256,6 +269,7 @@
 				DEVELOPMENT_TEAM = E9HY8BQNJG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BigBlueMarbleTask/Info.plist;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -285,6 +299,7 @@
 				DEVELOPMENT_TEAM = E9HY8BQNJG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BigBlueMarbleTask/Info.plist;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				LD_RUNPATH_SEARCH_PATHS = (

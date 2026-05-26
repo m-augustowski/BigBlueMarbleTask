@@ -8,9 +8,8 @@
 import Foundation
 
 struct Movie: Identifiable, Hashable {
-    let id = UUID()
-    
-    let name: String
-    let description: String
+    let id: UUID = UUID()
+    let title: String
+    let overview: String
     let iconURL: URL?
 }
